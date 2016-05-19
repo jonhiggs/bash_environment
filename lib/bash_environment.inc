@@ -1,59 +1,61 @@
-_be_type() {
+#!/bin/sh
+_get_augument_type() {
   # returns type of "getter" or "setter" with input string
-  if echo "$1" | grep -E "s/^.+=.+$/" &> /dev/null; then
+  if echo "$1" | grep -E "^.+=.+$" &> /dev/null; then
     echo "setter"
   else
     echo "getter"
   fi
 }
 
-
-bash_environment() {
-  env_file="${HOME}/.bash_environment"
-  [[ -f "${env_file}" ]] || touch "${env_file}"
-
-  # verify that they are all setters or getters
+_check_argument_type_consistency() {
+  consistency=1;
   for arg in $@; do
-    this_type=$(_be_type ${arg})
-    return
-    type=$(_be_type ${arg})
+    if [[ "$consistency" = 1 ]] && [[ $(_get_augument_type $1) != $(_get_augument_type ${arg}) ]]; then
+      consistency=0
+    fi
   done
-
-
-
-  for arg in $@; do
-    echo ${arg} | grep '=' &> /dev/null
-    [[ $? -eq 0 ]] && action="setter" || action="getter"
-
-  case $# in
-    0) source ${env_file} ;;
-    *)
-      local k=$(echo "$1" | cut -d= -f1)
-      local v=$(echo "$1" | cut -d= -f2)
-
-      if [[ ! -z "$k" ]] && [[ ! -z "$v" ]]
-        action="setter"
-      else
-        action="getter"
-      fi
-  esac
-
-  else
-    echo "Usage: bash_environment [key[=value]]"
-    return 1
-  fi
-
-  case "${action}" in
-    "sourcer") source ${env_file} ;;
-    "getter")  grep "^$k=" ${env_file}; true ;;
-    "setter")
-      if grep "^$k=.*" &> /dev/null; then
-        sed -i "s/^$k=.*/$k=$v/" ${env_file}
-      else
-        echo "$k=$v" >> ${env_file}
-      fi
-      ;;
-  esac
+  echo "$consistency"
 }
+
+_get_auguments_type() {
+  if [[ $(_check_argument_type_consistency $*) = 1 ]]; then
+    echo $(_get_augument_type $1)
+  fi
+}
+
+_get_action(){
+  if [[ $# = 0 ]]; then
+    echo "sourcer"
+  else
+    echo $(_get_auguments_type $*)
+  fi
+}
+
+env_file="${HOME}/.bash_environment"
+[[ -f "${env_file}" ]] || touch "${env_file}"
+
+
+
+case $(_get_action $*) in
+  "sourcer") 
+cat ${env_file} 
+;;
+"getter")  
+for key in $@; do
+  echo cat ${env_file} | grep -E "^$key=.+$" ${env_file}
+done
+;;
+"setter")
+for arg in $@; do
+  key=$(echo "$arg" | grep -Eo "^.+=")
+  if cat ${env_file} | grep -E "^$key.+$" &> /dev/null; then
+    sed -i "s/^$key.*$/$arg/g" ${env_file}
+  else
+    echo "$arg" >> ${env_file}
+  fi
+done
+;;
+esac
 
 #! vim: ft=sh
