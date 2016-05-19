@@ -25,7 +25,7 @@ _get_auguments_type() {
 }
 
 _get_action(){
-  if [[ $# = 0 ]]; then
+  if [[ $# -eq 0 ]]; then
     echo "sourcer"
   else
     echo $(_get_auguments_type $*)
