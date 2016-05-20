@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 _usage() {
-  echo "$0 [name[=value] ...]"
+  echo "$0 [name[=value] ...]" >&2
 }
 
 _uniq_actions() {
