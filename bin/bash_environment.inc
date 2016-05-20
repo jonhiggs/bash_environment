@@ -4,15 +4,6 @@ _usage() {
   echo "$0 [name[=value] ...]"
 }
 
-_get_augument_type() {
-  # returns type of "getter" or "setter" with input string
-  if echo "$1" | grep -E "^.+=.+$" &> /dev/null; then
-    echo "setter"
-  else
-    echo "getter"
-  fi
-}
-
 _check_argument_type_consistency() {
   consistency=1;
   for arg in $@; do
@@ -23,23 +14,18 @@ _check_argument_type_consistency() {
   echo "$consistency"
 }
 
-_get_auguments_type() {
-  if [[ $(_check_argument_type_consistency $*) = 1 ]]; then
-    echo $(_get_augument_type $1)
-  fi
+_get_action() {
+  [[ -z ${input} ]]           && echo "sourcer" && return 0
+  [[ ${input} =~ /^[^=]+$/ ]] && echo "getter"  && return 0
+  [[ ${input} =~ /^.+=.+$/ ]] && echo "setter"  && return 0
+  return 1
 }
 
-_get_action(){
-  if [[ $# -eq 0 ]]; then
-    echo "sourcer"
-  else
-    echo $(_get_auguments_type $*)
-  fi
-}
 
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 
+_actions $@ 
 
 case $(_get_action $*) in
   "sourcer")
