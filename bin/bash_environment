@@ -32,7 +32,6 @@ _valid_input() {
   return 0
 }
 
-
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 [[ $# -eq 0 ]] && cat "${ENV_FILE}" && exit 0
