@@ -3,14 +3,13 @@ _usage() {
   echo "$0 [name[=value] ...]" >&2
 }
 
-_uniq_actions() {
-  [[ $( (for a in $@; do echo "$a"; done) | sort | uniq | wc -l) -eq 1 ]]
-  return $?
+_get_actions() {
+  for arg in $@; do _get_action "${arg}"; done
 }
 
 _get_action() {
-  [[ $1 =~ ^[^=]+$ ]] && echo "getter"  && return 0
-  [[ $1 =~ ^.+=.+$ ]] && echo "setter"  && return 0
+  [[ $1 =~ ^[^=]+$ ]]            && echo "getter"  && return 0
+  [[ $1 =~ ^[A-Za-z_]+=[^=]+$ ]] && echo "setter"  && return 0
   return 1
 }
 
@@ -18,13 +17,28 @@ _delete_variable() {
   gsed -i "/^$1=.*$/d" ${ENV_FILE}
 }
 
+_valid_input() {
+  expected_object_count=$1
+  shift
+
+  # capture when some of the objects had invalid data
+  [[ ${expected_object_count} -eq $# ]] \
+    || return 1
+
+  # make sure all objects are of the same type
+  [[ $( (for a in $@; do echo "$a"; done) | sort | uniq | wc -l) -eq 1 ]] \
+    || return 1
+
+  return 0
+}
+
+
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 [[ $# -eq 0 ]] && cat ${ENV_FILE} && exit 0
 
-actions=()
-for arg in $@; do actions+=("$(_get_action ${arg})"); done
-_uniq_actions ${actions[@]} || ( _usage && exit 1 )
+actions=( $(_get_actions "$@") )
+_valid_input $# ${actions[@]} || _usage
 
 for arg in $@; do
   key=$(echo ${arg} | cut -d= -f1)
