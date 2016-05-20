@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
 _get_augument_type() {
   # returns type of "getter" or "setter" with input string
   if echo "$1" | grep -E "^.+=.+$" &> /dev/null; then
