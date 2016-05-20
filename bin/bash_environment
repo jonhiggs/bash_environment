@@ -15,7 +15,7 @@ _get_action() {
 }
 
 _delete_variable() {
-  sed "/^$1=.*$/d" ${ENV_FILE}
+  gsed -i "/^$1=.*$/d" ${ENV_FILE}
 }
 
 readonly ENV_FILE="${HOME}/.bash_environment"
