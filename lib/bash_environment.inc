@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+_usage() {
+  echo "$0 [name[=value] ...]"
+}
+
 _get_augument_type() {
   # returns type of "getter" or "setter" with input string
   if echo "$1" | grep -E "^.+=.+$" &> /dev/null; then
