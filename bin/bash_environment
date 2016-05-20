@@ -26,23 +26,15 @@ actions=()
 for arg in $@; do actions+=("$(_get_action ${arg})"); done
 _uniq_actions ${actions[@]} || ( _usage && exit 1 )
 
-#case $(_get_action $*) in
-#  "sourcer")
-#    cat ${ENV_FILE}
-#    ;;
-#  "getter")
-#    for key in $@; do
-#      echo cat ${ENV_FILE} | grep -E "^$key=.+$" ${ENV_FILE}
-#    done
-#    ;;
-#  "setter")
-#    for arg in $@; do
-#      key=$(echo "$arg" | grep -Eo "^.+=")
-#      if cat ${ENV_FILE} | grep -E "^$key.+$" &> /dev/null; then
-#        sed -i "s/^$key.*$/$arg/g" ${ENV_FILE}
-#      else
-#        echo "$arg" >> ${ENV_FILE}
-#      fi
-#    done
-#    ;;
-#esac
+for arg in $@; do
+  key=$(echo ${arg} | cut -d= -f1)
+  value=$(echo ${arg} | cut -d= -f2)
+
+  case $(_get_action ${arg}) in
+    "getter") grep -E "^$key=.+$" ${ENV_FILE} ;;
+    "setter")
+      _delete_variable ${key}
+      echo "${arg}" >> ${ENV_FILE}
+      ;;
+  esac
+done
