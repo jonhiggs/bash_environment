@@ -20,7 +20,7 @@ _delete_variable() {
 
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
-[[ $# -eq 0 ]] && source ${ENV_FILE} && exit 0
+[[ $# -eq 0 ]] && cat ${ENV_FILE} && exit 0
 
 actions=()
 for arg in $@; do actions+=("$(_get_action ${arg})"); done
