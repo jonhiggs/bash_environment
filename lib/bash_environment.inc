@@ -32,27 +32,27 @@ _get_action(){
   fi
 }
 
-env_file="${HOME}/.bash_environment"
-[[ -f "${env_file}" ]] || touch "${env_file}"
+readonly ENV_FILE="${HOME}/.bash_environment"
+[[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 
 
 
 case $(_get_action $*) in
   "sourcer") 
-cat ${env_file} 
+cat ${ENV_FILE} 
 ;;
 "getter")  
 for key in $@; do
-  echo cat ${env_file} | grep -E "^$key=.+$" ${env_file}
+  echo cat ${ENV_FILE} | grep -E "^$key=.+$" ${ENV_FILE}
 done
 ;;
 "setter")
 for arg in $@; do
   key=$(echo "$arg" | grep -Eo "^.+=")
-  if cat ${env_file} | grep -E "^$key.+$" &> /dev/null; then
-    sed -i "s/^$key.*$/$arg/g" ${env_file}
+  if cat ${ENV_FILE} | grep -E "^$key.+$" &> /dev/null; then
+    sed -i "s/^$key.*$/$arg/g" ${ENV_FILE}
   else
-    echo "$arg" >> ${env_file}
+    echo "$arg" >> ${ENV_FILE}
   fi
 done
 ;;
