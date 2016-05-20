@@ -14,7 +14,7 @@ _get_action() {
 }
 
 _delete_variable() {
-  gsed -i "/^$1=.*$/d" ${ENV_FILE}
+  gsed -i "/^$1=.*$/d" "${ENV_FILE}"
 }
 
 _valid_input() {
@@ -35,20 +35,20 @@ _valid_input() {
 
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
-[[ $# -eq 0 ]] && cat ${ENV_FILE} && exit 0
+[[ $# -eq 0 ]] && cat "${ENV_FILE}" && exit 0
 
 actions=( $(_get_actions "$@") )
-_valid_input $# ${actions[@]} || _usage
+_valid_input "$#" "${actions[@]}" || _usage
 
 for arg in $@; do
-  key=$(echo ${arg} | cut -d= -f1)
-  value=$(echo ${arg} | cut -d= -f2)
+  key=$(echo "${arg}" | cut -d= -f1)
+  value=$(echo "${arg}" | cut -d= -f2)
 
-  case $(_get_action ${arg}) in
-    "getter") grep -E "^$key=.+$" ${ENV_FILE} ;;
+  case $(_get_action "${arg}") in
+    "getter") grep -E "^$key=.+$" "${ENV_FILE}" ;;
     "setter")
-      _delete_variable ${key}
-      echo "${arg}" >> ${ENV_FILE}
+      _delete_variable "${key}"
+      echo "${arg}" >> "${ENV_FILE}"
       ;;
   esac
 done
