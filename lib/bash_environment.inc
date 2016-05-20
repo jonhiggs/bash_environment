@@ -38,23 +38,23 @@ readonly ENV_FILE="${HOME}/.bash_environment"
 
 case $(_get_action $*) in
   "sourcer")
-cat ${ENV_FILE}
-;;
-"getter")
-for key in $@; do
-  echo cat ${ENV_FILE} | grep -E "^$key=.+$" ${ENV_FILE}
-done
-;;
-"setter")
-for arg in $@; do
-  key=$(echo "$arg" | grep -Eo "^.+=")
-  if cat ${ENV_FILE} | grep -E "^$key.+$" &> /dev/null; then
-    sed -i "s/^$key.*$/$arg/g" ${ENV_FILE}
-  else
-    echo "$arg" >> ${ENV_FILE}
-  fi
-done
-;;
+    cat ${ENV_FILE}
+    ;;
+  "getter")
+    for key in $@; do
+      echo cat ${ENV_FILE} | grep -E "^$key=.+$" ${ENV_FILE}
+    done
+    ;;
+  "setter")
+    for arg in $@; do
+      key=$(echo "$arg" | grep -Eo "^.+=")
+      if cat ${ENV_FILE} | grep -E "^$key.+$" &> /dev/null; then
+        sed -i "s/^$key.*$/$arg/g" ${ENV_FILE}
+      else
+        echo "$arg" >> ${ENV_FILE}
+      fi
+    done
+    ;;
 esac
 
 #! vim: ft=sh
