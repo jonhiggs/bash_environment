@@ -36,12 +36,11 @@ readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 
 
-
 case $(_get_action $*) in
-  "sourcer") 
-cat ${ENV_FILE} 
+  "sourcer")
+cat ${ENV_FILE}
 ;;
-"getter")  
+"getter")
 for key in $@; do
   echo cat ${ENV_FILE} | grep -E "^$key=.+$" ${ENV_FILE}
 done
