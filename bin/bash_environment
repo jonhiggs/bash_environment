@@ -14,6 +14,10 @@ _get_action() {
   return 1
 }
 
+_delete_variable() {
+  sed "/^$1=.*$/d" ${ENV_FILE}
+}
+
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 [[ $# -eq 0 ]] && source ${ENV_FILE} && exit 0
