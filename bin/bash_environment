@@ -37,6 +37,7 @@ _valid_input() {
 readonly ENV_FILE="${HOME}/.bash_environment"
 [[ -f "${ENV_FILE}" ]] || touch "${ENV_FILE}"
 [[ $# -eq 0 ]] && cat "${ENV_FILE}" && exit 0
+[[ $1 == "--help" ]] && _usage && exit 0
 
 actions=( $(_get_actions "$@") )
 _valid_input "$#" "${actions[@]}" || _usage
