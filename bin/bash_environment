@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 SED_CMD=$(which gsed || which sed)
+
 _usage() {
-  echo "$0 [name[=value] ...]" >&2
+  echo "Usage: $(basename $0) [name[=value] ...]" >&2
 }
 
 _get_actions() {
